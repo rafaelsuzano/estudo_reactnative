@@ -1,8 +1,8 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 
-import styles from '../styles/loginStyles';
-import { login } from '../scripts/loginScript';
+import styles from '../../styles/loginStyles';
+import { login } from '../../scripts/loginScript';
 
 export default function LoginScreen({ navigation }) {
   const [usuario, setUsuario] = useState('');
@@ -12,7 +12,7 @@ export default function LoginScreen({ navigation }) {
     const resultado = await login(usuario, senha);
 
     if (resultado.sucesso) {
-      navigation.navigate('Home', { usuario });
+      navigation.replace('Drawer', { usuario }); // ✅ CORRETO
     }
   }
 
