@@ -297,7 +297,8 @@ app.get("/consulta-placa/:placa", async (req, res) => {
  * START SERVER
  * ============================
  */
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 API rodando em http://localhost:${PORT}`);
+const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 API rodando em http://${HOST}:${PORT}`);
 });

@@ -12,6 +12,61 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./bd/bd.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - gestaofrota-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-api
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: estudo_db
+      DB_PORT: 5432
+      PLACAS_EMAIL: ${PLACAS_EMAIL:-rafaelsuzano@hotmail.com}
+      PLACAS_PASSWORD: ${PLACAS_PASSWORD:-suzano30}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gestaofrota-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontEnd
+      dockerfile: Dockerfile
+    container_name: frontend-expo
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+    environment:
+      EXPO_DEVTOOLS_LISTEN_ADDRESS: 0.0.0.0
+    networks:
+      - gestaofrota-network
+    volumes:
+      - ./frontEnd:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+networks:
+  gestaofrota-network:
+    driver: bridge
 
 volumes:
   postgres_data:
