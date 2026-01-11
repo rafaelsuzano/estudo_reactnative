@@ -2,6 +2,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ConsultaCNPJ from '../screens/Cadastro/ConsultaCnpj';
 
 const Drawer = createDrawerNavigator();
 
@@ -22,9 +23,19 @@ export default function DrawerNavigator({ route }) {
       />
 
       <Drawer.Screen
-        name="Cadastro de Credenciado"
-        component={ProfileScreen}
+        name="Consulta CNPJ"
+        component={ConsultaCNPJ}
       />
+
+
+
+
+
+
+
     </Drawer.Navigator>
+
+
+
   );
 }
