@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const fetch = require("node-fetch");
 const pool = require("./db");
 
 const app = express();
@@ -36,7 +35,7 @@ app.post("/login", async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Erro no login:", error);
     res.status(500).json({ message: "Erro no servidor" });
   }
 });
@@ -54,11 +53,15 @@ app.get("/cnpj/:cnpj", async (req, res) => {
       `https://www.receitaws.com.br/v1/cnpj/${cnpj}`
     );
 
+    if (!response.ok) {
+      return res.status(502).json({ error: "Erro ao acessar ReceitaWS" });
+    }
+
     const data = await response.json();
     res.json(data);
 
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao consultar CNPJ:", error);
     res.status(500).json({ error: "Erro ao consultar CNPJ" });
   }
 });
