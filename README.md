@@ -39,8 +39,19 @@ docker-compose exec frontend sh
 
 ### URLs dos serviços
 - **Backend API**: http://localhost:3000
-- **Frontend Expo**: http://localhost:19000 (web)
+- **Frontend Expo Web**: http://localhost:8081 (inicia automaticamente no modo web)
 - **PostgreSQL**: localhost:5432
+
+### Troubleshooting
+
+**Erro: "port 3000 is already in use"**
+- Se você tiver o backend rodando localmente, pare-o antes de usar Docker
+- Verifique processos usando a porta: `lsof -i :3000`
+- Pare o processo: `kill <PID>` ou pare o servidor Node.js local
+
+**Erro: "port 5432 is already in use"**
+- Pare qualquer instância local do PostgreSQL antes de usar Docker
+- Ou altere a porta no `docker-compose.yml`
 
 ## Executar localmente (sem Docker)
 
