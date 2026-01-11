@@ -1,14 +1,54 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import cors from 'cors';
+const express = require("express");
+const cors = require("cors");
+const fetch = require("node-fetch");
+const pool = require("./db");
 
 const app = express();
-app.use(cors()); // 👈 permite acesso do browser
 
-// Endpoint intermediário
-app.get('/cnpj/:cnpj', async (req, res) => {
+app.use(cors());
+app.use(express.json());
+
+/**
+ * ============================
+ * LOGIN
+ * ============================
+ */
+app.post("/login", async (req, res) => {
+  const { usuario, senha } = req.body;
+
+  if (!usuario || !senha) {
+    return res.status(400).json({ message: "Dados obrigatórios" });
+  }
+
   try {
-    const cnpj = req.params.cnpj;
+    const result = await pool.query(
+      "SELECT * FROM usuarios WHERE usuario = $1 AND senha = $2",
+      [usuario, senha]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Usuário ou senha inválidos" });
+    }
+
+    res.json({
+      message: "Login realizado com sucesso",
+      usuario: result.rows[0].usuario
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro no servidor" });
+  }
+});
+
+/**
+ * ============================
+ * CONSULTA CNPJ (ReceitaWS)
+ * ============================
+ */
+app.get("/cnpj/:cnpj", async (req, res) => {
+  try {
+    const { cnpj } = req.params;
 
     const response = await fetch(
       `https://www.receitaws.com.br/v1/cnpj/${cnpj}`
@@ -18,10 +58,17 @@ app.get('/cnpj/:cnpj', async (req, res) => {
     res.json(data);
 
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao consultar CNPJ' });
+    console.error(error);
+    res.status(500).json({ error: "Erro ao consultar CNPJ" });
   }
 });
 
-app.listen(3005, () => {
-  console.log('API rodando em http://localhost:3005');
+/**
+ * ============================
+ * START SERVER
+ * ============================
+ */
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 API rodando em http://localhost:${PORT}`);
 });
